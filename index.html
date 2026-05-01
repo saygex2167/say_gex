@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <!-- базовая херня: кодировка, вьюпорт, тайтл. не трогать -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>say_gex</title>
+    <!-- иконка сайта -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' fill='%23e0e0e0' font-family='monospace' font-size='22' font-weight='bold'%3ES%3C/text%3E%3C/svg%3E">
+    <!-- подключаю стили, лежат в папке css -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- канвас для матрицы, лежит под всем контентом. рисует катакану -->
+    <canvas id="matrix-bg"></canvas>
+
+    <!-- градиент для колец. спрятал в нулевой размер чтоб не мозолил глаза в DOM -->
+    <svg style="position:absolute;width:0;height:0;">
+        <defs>
+            <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="rgba(255,255,255,0.4)"/>
+                <stop offset="50%" stop-color="rgba(255,255,255,0.1)"/>
+                <stop offset="100%" stop-color="rgba(255,255,255,0.4)"/>
+            </linearGradient>
+        </defs>
+    </svg>
+
+    <!-- декорации: крутящиеся кольца, линии, углы, шестиугольники. чисто для атмосферы -->
+    <div class="circle-ornament">
+        <svg viewBox="0 0 300 300">
+            <circle class="circle-ring" cx="150" cy="150" r="149"></circle>
+            <circle class="circle-beam" cx="150" cy="150" r="149"></circle>
+        </svg>
+    </div>
+    <div class="circle-ornament">
+        <svg viewBox="0 0 300 300">
+            <circle class="circle-ring" cx="150" cy="150" r="149"></circle>
+            <circle class="circle-beam" cx="150" cy="150" r="149"></circle>
+        </svg>
+    </div>
+    <div class="circle-ornament">
+        <svg viewBox="0 0 300 300">
+            <circle class="circle-ring" cx="150" cy="150" r="149"></circle>
+            <circle class="circle-beam" cx="150" cy="150" r="149"></circle>
+        </svg>
+    </div>
+
+    <div class="decor-line"></div>
+    <div class="decor-line"></div>
+    <div class="v-line"></div>
+    <div class="v-line"></div>
+
+    <div class="corner corner-tl"></div>
+    <div class="corner corner-tr"></div>
+    <div class="corner corner-bl"></div>
+    <div class="corner corner-br"></div>
+
+    <div class="hex-grid">
+        <div class="hex"></div><div class="hex"></div><div class="hex"></div><div class="hex"></div><div class="hex"></div>
+    </div>
+
+    <!-- основной контейнер, центрирует контент -->
+    <div class="container">
+        <!-- верхняя панелька с временем и статусом -->
+        <div class="status-bar">
+            <div><span class="status-dot"></span>ONLINE</div>
+            <div id="datetime"></div>
+            <div>v.1.0</div>
+        </div>
+
+        <!-- тут всё содержимое страницы -->
+        <div class="content-area">
+            <!-- глитч-рамка. переместил вывеску сюда, как ты просил. теперь она в этом пустом блоке над ремонтами -->
+            <div class="glitch-box">
+                <!-- та самая вывеска say_gex. раз в 30 сек глитчит и показывает "ошибку" -->
+                <div class="sign-wrapper">
+                    <h1 class="aesthetic-sign" id="neonSign">
+                        <span class="sign-char" data-n="s" data-g="g">s</span>
+                        <span>a</span><span>y</span><span>_</span>
+                        <span class="sign-char" data-n="g" data-g="s">g</span>
+                        <span>e</span><span>x</span>
+                    </h1>
+                </div>
+            </div>
+
+            <!-- сетка с плашками "РЕМОНТ". пока заглушки, потом сюда контент -->
+            <div class="grid-layout">
+                <div class="grid-item"><div class="repair-stamp">РЕМОНТ</div></div>
+                <div class="grid-item"><div class="repair-stamp">РЕМОНТ</div></div>
+                <div class="grid-item"><div class="repair-stamp">РЕМОНТ</div></div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- иконки соцсетей. пути исправил на img/ чтоб на гитхабе не ломалось -->
+            <div class="socials-container">
+                <a href="https://github.com/saygex2167" class="social-link" target="_blank"><img src="img/github_icon.svg" alt="gh"></a>
+                <a href="https://t.me/say_gex2167" class="social-link" target="_blank"><img src="img/telegram_icon.svg" alt="tg"></a>
+                <a href="https://steamcommunity.com/profiles/76561199242745774/" class="social-link" target="_blank"><img src="img/steam_icon.svg" alt="st"></a>
+                <a href="https://discord.com/users/1154363479130652682" class="social-link" target="_blank"><img src="img/discord_icon.svg" alt="ds"></a>
+                <a href="https://vk.com/say_gex2167" class="social-link" target="_blank"><img src="img/vk_icon.svg" alt="vk"></a>
+                <a href="https://boulderbugle.com/max-users-say-gex-uNtiAE1k" class="social-link" target="_blank"><img src="img/max_icon.svg" alt="max"></a>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- пустые блоки под будущий контент -->
+            <div class="placeholder-box"></div>
+            <div class="placeholder-box"></div>
+
+            <div class="divider"></div>
+
+            <!-- раздел блога, пока тестовые посты чтоб верстку проверить -->
+            <h2 class="blog-header">// БЛОГ</h2>
+            
+            <div class="blog-post">
+                <div class="post-title">Название первого поста</div>
+                <div class="post-desc">Тут будет описание. Пока заглушка, потом допишу нормальный текст и добавлю дату.</div>
+            </div>
+
+            <div class="blog-post">
+                <div class="post-title">Название второго поста</div>
+                <div class="post-desc">Описание второго поста. Формат тот же, потом подключу функцию чтобы подтягивалось автоматически.</div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- скрипты в конце body чтоб страница грузилась быстрее -->
+    <script src="js/main.js"></script>
+</body>
+</html>
