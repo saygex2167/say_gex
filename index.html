@@ -71,9 +71,9 @@
 
         <!-- тут всё содержимое страницы -->
         <div class="content-area">
-            <!-- глитч-рамка. переместил вывеску сюда, как ты просил. теперь она в этом пустом блоке над ремонтами -->
+            <!-- глитч-рамка -->
             <div class="glitch-box">
-                <!-- та самая вывеска say_gex. раз в 30 сек глитчит и показывает "ошибку" -->
+                <!-- вывеска say_gex. раз в 30 сек глитчит и показывает "ошибку" -->
                 <div class="sign-wrapper">
                     <h1 class="aesthetic-sign" id="neonSign">
                         <span class="sign-char" data-n="s" data-g="g">s</span>
@@ -93,7 +93,7 @@
 
             <div class="divider"></div>
 
-            <!-- иконки соцсетей. пути исправил на img/ чтоб на гитхабе не ломалось -->
+            <!-- иконки соцсетей -->
             <div class="socials-container">
                 <a href="https://github.com/saygex2167" class="social-link" target="_blank"><img src="img/github_icon.svg" alt="gh"></a>
                 <a href="https://t.me/say_gex2167" class="social-link" target="_blank"><img src="img/telegram_icon.svg" alt="tg"></a>
@@ -103,10 +103,21 @@
                 <a href="https://boulderbugle.com/max-users-say-gex-uNtiAE1k" class="social-link" target="_blank"><img src="img/max_icon.svg" alt="max"></a>
             </div>
 
-            <div class="divider"></div>
+                        <div class="divider"></div>
 
-            <!-- пустые блоки под будущий контент -->
-            <div class="placeholder-box"></div>
+            <!-- верхний блок заменён на аудио-плеер -->
+            <div class="player-box">
+                <div class="player-controls">
+                    <button id="player-play-btn" class="player-btn">[ ▶ ]</button>
+                    <span class="player-track">// Aphex Twin - 180db_[130]</span>
+                    <div class="player-progress-wrap" id="progress-wrap">
+                        <div class="player-progress-bar" id="player-progress"></div>
+                    </div>
+                    <span class="player-time" id="player-time">00:00 / 00:00</span>
+                </div>
+            </div>
+            
+            <!-- нижний блок оставил пустым под будущий контент -->
             <div class="placeholder-box"></div>
 
             <div class="divider"></div>
@@ -127,7 +138,11 @@
         </div>
     </div>
 
-    <!-- скрипты в конце body чтоб страница грузилась быстрее -->
+        <!-- фоновая музыка -->
+    <audio id="bg-audio" loop preload="auto">
+        <source src="audio/Aphex Twin - 180db_[130].mp3" type="audio/mpeg">
+    </audio>
+
     <script src="js/main.js"></script>
 </body>
 </html>
