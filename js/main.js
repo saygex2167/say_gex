@@ -83,38 +83,132 @@ function glitch() {
 }
 setInterval(glitch, 8000 + Math.random()*7000);
 
-/* === ЛОГИКА ГЛИТЧА ВЫВЕСКИ SAY_GEX === */
-// раз в 30 сек буквы s и g гаснут, меняются на g и s, трясутся красным, потом обратно
+/* === ЛОГИКА ВЫВЕСКИ SAY_GEX === */
+// раз в 30 сек имитация просадки напряжения + смена буфера терминала
 document.addEventListener('DOMContentLoaded', () => {
-    const sign = document.getElementById('neonSign'); // беру всю надпись целиком, чтобы трясти её полностью
+    const sign = document.getElementById('neonSign');
     const chars = document.querySelectorAll('.sign-char');
-    let isRunning = false; // флаг чтоб анимации не накладывались
+    let isRunning = false;
 
     setInterval(() => {
         if (isRunning) return;
         isRunning = true;
 
-        // 1. плавно гашу целевые буквы
-        chars.forEach(el => el.classList.add('off'));
+        // 1. включаем режим "обрыв сигнала" (просадка + сканлайн)
+        sign.classList.add('signal-break');
 
+        // 2. гасим целевые буквы (имитация разряда конденсаторов)
         setTimeout(() => {
-            // 2. меняю текст + включаю красный режим + ВКЛЮЧАЮ ЖИРНЫЙ ГЛИТЧ НА ВСЮ СТРОКУ
+            chars.forEach(el => el.classList.add('off'));
+        }, 80);
+
+        // 3. в пике просадки меняем текст (буфер терминала)
+        setTimeout(() => {
             chars.forEach(el => el.textContent = el.dataset.g);
             chars.forEach(el => el.classList.remove('off'));
-            chars.forEach(el => el.classList.add('error'));
-            sign.classList.add('sign-glitching'); // <<< тут начинается RGB-сплит и тряска
+            chars.forEach(el => el.classList.add('active-swap'));
+        }, 180);
 
-            // 3. через 2.5 сек возвращаю всё как было
-            setTimeout(() => {
-                chars.forEach(el => el.classList.add('off'));
-                
-                setTimeout(() => {
-                    chars.forEach(el => el.textContent = el.dataset.n);
-                    chars.forEach(el => el.classList.remove('off', 'error'));
-                    sign.classList.remove('sign-glitching'); // <<< глитч выключаю, возвращаю спокойный режим
-                    isRunning = false;
-                }, 300);
-            }, 2500); // сколько висит "ошибка"
-        }, 350); // время на затухание
-    }, 30000); // интервал запуска
+        // 4. восстановление (фосфорное послесвечение + снятие глитча)
+        setTimeout(() => {
+            chars.forEach(el => el.classList.add('off'));
+        }, 280);
+
+        setTimeout(() => {
+            chars.forEach(el => el.textContent = el.dataset.n);
+            chars.forEach(el => el.classList.remove('off', 'active-swap'));
+            sign.classList.remove('signal-break');
+            isRunning = false;
+        }, 380);
+    }, 30000);
 });
+
+/* === АУДИОПЛЕЕР + ФОНОВАЯ МУЗЫКА === */
+// цепляю элементы плеера и аудио-тег
+const audio = document.getElementById('bg-audio');
+const playBtn = document.getElementById('player-play-btn');
+const progressWrap = document.getElementById('progress-wrap');
+const progressBar = document.getElementById('player-progress');
+const timeDisplay = document.getElementById('player-time');
+
+let audioStarted = false;
+audio.volume = 0; // стартую с тишины для плавного входа
+
+// форматирую секунды в 00:00
+function formatTime(sec) {
+    if (isNaN(sec)) return '00:00';
+    const m = Math.floor(sec / 60).toString().padStart(2, '0');
+    const s = Math.floor(sec % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+}
+
+// обновляю прогресс и таймер
+audio.addEventListener('timeupdate', () => {
+    if (audio.duration) {
+        const pct = (audio.currentTime / audio.duration) * 100;
+        progressBar.style.width = pct + '%';
+        timeDisplay.textContent = `${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}`;
+    }
+});
+
+// клик по кнопке плей/пауза
+playBtn.addEventListener('click', () => {
+    if (!audioStarted) {
+        audioStarted = true;
+        audio.play().catch(() => {});
+        playBtn.textContent = '[ ■ ]';
+        playBtn.classList.add('active');
+        fadeInAudio();
+    } else {
+        if (audio.paused) {
+            audio.play();
+            playBtn.textContent = '[ ■ ]';
+            playBtn.classList.add('active');
+            fadeInAudio();
+        } else {
+            fadeOutAudio(() => {
+                audio.pause();
+                playBtn.textContent = '[ ▶ ]';
+                playBtn.classList.remove('active');
+            });
+        }
+    }
+});
+
+// клик по прогресс-бару (перемотка)
+progressWrap.addEventListener('click', (e) => {
+    if (!audio.duration) return;
+    const rect = progressWrap.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const pct = Math.max(0, Math.min(1, clickX / rect.width));
+    audio.currentTime = pct * audio.duration;
+});
+
+// первый клик в любом месте сайта (обход блокировки автоплея)
+document.addEventListener('click', () => {
+    if (!audioStarted) {
+        audioStarted = true;
+        audio.play().catch(() => {});
+        playBtn.textContent = '[ ■ ]';
+        playBtn.classList.add('active');
+        fadeInAudio();
+    }
+}, { once: true });
+
+// плавное нарастание до 25% громкости
+function fadeInAudio() {
+    let vol = 0;
+    const interval = setInterval(() => {
+        if (vol < 0.25) { vol += 0.01; audio.volume = vol; }
+        else { clearInterval(interval); }
+    }, 50);
+}
+
+// плавное затухание перед паузой
+function fadeOutAudio(callback) {
+    let vol = audio.volume;
+    const interval = setInterval(() => {
+        if (vol > 0) { vol -= 0.01; audio.volume = Math.max(0, vol); }
+        else { clearInterval(interval); callback(); }
+    }, 50);
+}
