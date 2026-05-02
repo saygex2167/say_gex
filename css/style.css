@@ -369,4 +369,40 @@ body::after {
     .circle-ornament:nth-child(3) { transform: translateY(-50%) scale(0.6); }
     .grid-layout { grid-template-columns: 1fr; }
     .corner { width: 30px; height: 30px; }
+    /* === МОБИЛЬНАЯ ВЕРСИЯ ПЛЕЕРА === */
+/* на узких экранах флекс ломается. раскладываю в 3 строки, добавляю отступы для пальцев */
+    .player-box { padding: 14px; }
+    
+    .player-controls {
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+    }
+    
+    .player-btn {
+        min-width: 44px; /* стандартный тач-таргет, чтоб пальцем не мазать */
+        padding: 8px 12px;
+    }
+    
+    .player-track {
+        flex: 1 1 calc(100% - 56px); /* занимает всю ширину кроме кнопки */
+        min-width: 0; /* разрешаю обрезку текста троеточием */
+        font-size: 0.95rem;
+    }
+    
+    .player-progress-wrap {
+        flex: 1 1 100%; /* принудительно на новую строку */
+        width: 100%;
+        height: 4px;
+        margin-top: 4px;
+    }
+    
+    .player-time {
+        width: 100%;
+        text-align: center;
+        margin-top: 6px;
+        font-size: 0.85rem;
+        min-width: auto;
+    }
 }
+
